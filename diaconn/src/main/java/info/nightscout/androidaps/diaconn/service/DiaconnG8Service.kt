@@ -347,6 +347,12 @@ class DiaconnG8Service : DaggerService() {
     fun bolus(insulin: Double, carbs: Int, carbTime: Long, t: EventOverviewBolusProgress.Treatment): Boolean {
         if (!isConnected) return false
         if (BolusProgressDialog.stopPressed) return false
+        // Only Carbs
+        if (carbs > 0 && insulin == 0.0) {
+            pumpSync.syncCarbsWithTimestamp(carbTime, carbs.toDouble(), null, PumpType.DIACONN_G8, diaconnG8Pump.serialNo.toString())
+            return true
+        }
+
         rxBus.send(EventPumpStatusChanged(rh.gs(R.string.startingbolus)))
 
         // bolus speed setting
