@@ -1309,6 +1309,7 @@ public class ComboPlugin extends PumpPluginBase implements Pump, Constraints {
             if (ps.activeAlert != null && ps.activeAlert.errorCode != null) {
                 extendedJson.put("ErrorCode", ps.activeAlert.errorCode);
             }
+            extendedJson.put("BaseBasalRate", getBaseBasalRate());
             pumpJson.put("extended", extendedJson);
 
             JSONObject batteryJson = new JSONObject();
@@ -1414,7 +1415,7 @@ public class ComboPlugin extends PumpPluginBase implements Pump, Constraints {
     @NonNull @Override
     public Constraint<Double> applyMaxIOBConstraints(@NonNull Constraint<Double> maxIob) {
         if (lowSuspendOnlyLoopEnforcedUntil > System.currentTimeMillis())
-            maxIob.setIfSmaller(getAapsLogger(), 0d, String.format(getRh().gs(R.string.limitingmaxiob), 0d, getRh().gs(R.string.unsafeusage)), this);
+            maxIob.setIfSmaller(getAapsLogger(), 0d, getRh().gs(R.string.limitingmaxiob, 0d, getRh().gs(R.string.unsafeusage)), this);
         return maxIob;
     }
 

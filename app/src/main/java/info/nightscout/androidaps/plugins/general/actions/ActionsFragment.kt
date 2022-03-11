@@ -49,8 +49,8 @@ import info.nightscout.androidaps.utils.rx.AapsSchedulers
 import info.nightscout.shared.sharedPreferences.SP
 import info.nightscout.androidaps.utils.ui.SingleClickButton
 import info.nightscout.androidaps.utils.ui.UIRunnable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
 import java.util.*
 import javax.inject.Inject
 
@@ -157,10 +157,20 @@ class ActionsFragment : DaggerFragment() {
         cannulaOrPatch = view.findViewById(R.id.cannula_or_patch)
 
         profileSwitch?.setOnClickListener {
-            ProfileSwitchDialog().show(childFragmentManager, "ProfileSwitchDialog")
+            activity?.let { activity ->
+                protectionCheck.queryProtection(
+                    activity,
+                    ProtectionCheck.Protection.BOLUS,
+                    UIRunnable { ProfileSwitchDialog().show(childFragmentManager, "ProfileSwitchDialog")})
+            }
         }
         tempTarget?.setOnClickListener {
-            TempTargetDialog().show(childFragmentManager, "Actions")
+            activity?.let { activity ->
+                protectionCheck.queryProtection(
+                    activity,
+                    ProtectionCheck.Protection.BOLUS,
+                    UIRunnable { TempTargetDialog().show(childFragmentManager, "Actions") })
+            }
         }
         extendedBolus?.setOnClickListener {
             activity?.let { activity ->
@@ -187,7 +197,12 @@ class ActionsFragment : DaggerFragment() {
             }
         }
         setTempBasal?.setOnClickListener {
-            TempBasalDialog().show(childFragmentManager, "Actions")
+            activity?.let { activity ->
+                protectionCheck.queryProtection(
+                    activity,
+                    ProtectionCheck.Protection.BOLUS,
+                    UIRunnable { TempBasalDialog().show(childFragmentManager, "Actions") })
+            }
         }
         cancelTempBasal?.setOnClickListener {
             if (iobCobCalculator.getTempBasalIncludingConvertedExtended(dateUtil.now()) != null) {

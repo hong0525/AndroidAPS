@@ -33,7 +33,7 @@ import info.nightscout.androidaps.utils.resources.ResourceHelper
 import info.nightscout.androidaps.utils.rx.AapsSchedulers
 import info.nightscout.shared.sharedPreferences.SP
 import info.nightscout.androidaps.utils.wizard.BolusWizard
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.text.DecimalFormat
 import java.util.*
 import javax.inject.Inject
@@ -125,7 +125,9 @@ class WizardDialog : DaggerDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadCheckedStates()
         processCobCheckBox()
-        binding.sbCheckbox.visibility = sp.getBoolean(R.string.key_usesuperbolus, false).toVisibility()
+        val useSuperBolus = sp.getBoolean(R.string.key_usesuperbolus, false)
+        binding.sbCheckbox.visibility = useSuperBolus.toVisibility()
+        binding.superBolusRow.visibility = useSuperBolus.toVisibility()
         binding.notesLayout.visibility = sp.getBoolean(R.string.key_show_notes_entry_dialogs, false).toVisibility()
 
         val maxCarbs = constraintChecker.getMaxCarbsAllowed().value()
@@ -146,7 +148,7 @@ class WizardDialog : DaggerDialogFragment() {
 
         if (correctionPercent) {
             calculatedPercentage = sp.getInt(R.string.key_boluswizard_percentage, 100).toDouble()
-            binding.correctionInput.setParams(calculatedPercentage, 10.0, 200.0, 1.0, DecimalFormat("0"), false, binding.okcancel.ok, textWatcher)
+            binding.correctionInput.setParams(calculatedPercentage, 10.0, 200.0, 5.0, DecimalFormat("0"), false, binding.okcancel.ok, textWatcher)
             binding.correctionInput.value = calculatedPercentage
             binding.correctionUnit.text = "%"
         } else {
@@ -213,7 +215,7 @@ class WizardDialog : DaggerDialogFragment() {
                 binding.correctionUnit.text = if (isChecked) "%" else rh.gs(R.string.insulin_unit_shortname)
                 correctionPercent = binding.correctionPercent.isChecked
                 if (correctionPercent) {
-                    binding.correctionInput.setParams(calculatedPercentage, 10.0, 200.0, 1.0, DecimalFormat("0"), false, binding.okcancel.ok, textWatcher)
+                    binding.correctionInput.setParams(calculatedPercentage, 10.0, 200.0, 5.0, DecimalFormat("0"), false, binding.okcancel.ok, textWatcher)
                     binding.correctionInput.customContentDescription = rh.gs(R.string.a11_correction_percentage)
                 } else {
                     binding.correctionInput.setParams(
@@ -436,10 +438,10 @@ class WizardDialog : DaggerDialogFragment() {
         )
 
         wizard?.let { wizard ->
-            binding.bg.text = String.format(rh.gs(R.string.format_bg_isf), valueToUnitsToString(Profile.toMgdl(bg, profileFunction.getUnits()), profileFunction.getUnits().asText), wizard.sens)
+            binding.bg.text = rh.gs(R.string.format_bg_isf, valueToUnitsToString(Profile.toMgdl(bg, profileFunction.getUnits()), profileFunction.getUnits().asText), wizard.sens)
             binding.bgInsulin.text = rh.gs(R.string.formatinsulinunits, wizard.insulinFromBG)
 
-            binding.carbs.text = String.format(rh.gs(R.string.format_carbs_ic), carbs.toDouble(), wizard.ic)
+            binding.carbs.text = rh.gs(R.string.format_carbs_ic, carbs.toDouble(), wizard.ic)
             binding.carbsInsulin.text = rh.gs(R.string.formatinsulinunits, wizard.insulinFromCarbs)
 
             binding.iobInsulin.text = rh.gs(R.string.formatinsulinunits, wizard.insulinFromBolusIOB + wizard.insulinFromBasalIOB)
@@ -462,7 +464,7 @@ class WizardDialog : DaggerDialogFragment() {
 
             // COB
             if (binding.cobCheckbox.isChecked) {
-                binding.cob.text = String.format(rh.gs(R.string.format_cob_ic), cob, wizard.ic)
+                binding.cob.text = rh.gs(R.string.format_cob_ic, cob, wizard.ic)
                 binding.cobInsulin.text = rh.gs(R.string.formatinsulinunits, wizard.insulinFromCOB)
             } else {
                 binding.cob.text = ""
