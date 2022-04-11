@@ -21,6 +21,7 @@ import info.nightscout.androidaps.database.AppRepository
 import info.nightscout.androidaps.database.entities.UserEntry
 import info.nightscout.androidaps.database.entities.UserEntry.Action
 import info.nightscout.androidaps.database.entities.UserEntry.Sources
+import info.nightscout.androidaps.diaconn.events.EventDiaconnG8PumpLogReset
 import info.nightscout.androidaps.events.EventAppExit
 import info.nightscout.androidaps.interfaces.Config
 import info.nightscout.androidaps.interfaces.ImportExportPrefs
@@ -340,6 +341,7 @@ class ImportExportPrefsImpl @Inject constructor(
 
     private fun restartAppAfterImport(context: Context) {
         sp.putBoolean(R.string.key_setupwizard_processed, true)
+        rxBus.send(EventDiaconnG8PumpLogReset())
         OKDialog.show(context, rh.gs(R.string.setting_imported), rh.gs(R.string.restartingapp)) {
             uel.log(Action.IMPORT_SETTINGS, Sources.Maintenance)
             log.debug(LTag.CORE, "Exiting")
