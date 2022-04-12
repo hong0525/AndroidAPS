@@ -21,7 +21,7 @@ class DiaconnLogUploader @Inject constructor (
     private var retrofit: Retrofit? = null
 
     fun getRetrofitInstance(): Retrofit? {
-        aapsLogger.debug(LTag.PUMPCOMM, "Diaconn pump logs upload BASE_URL : $BASE_URL")
+        //aapsLogger.debug(LTag.PUMPCOMM, "Diaconn pump logs upload BASE_URL : $BASE_URL")
         if (retrofit == null) {
             retrofit = Retrofit.Builder()
                 .baseUrl(BASE_URL)

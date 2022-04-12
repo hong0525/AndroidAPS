@@ -322,7 +322,10 @@ class DiaconnG8Service : DaggerService() {
                 val response = api?.getPumpLastNo(diaconnG8Pump.pumpUid, diaconnG8Pump.pumpVersion, diaconnG8Pump.pumpIncarnationNum)?.execute()
                 if(response?.body()?.ok == true) {
                     aapsLogger.debug(LTag.PUMPCOMM, "pumplog_no = ${response.body()?.info?.pumplog_no}")
-                    val platformLastNo = response.body()?.info?.pumplog_no!!
+                    var platformLastNo = response.body()?.info?.pumplog_no!!
+                    if(platformLastNo.toInt() == -1) {
+                        platformLastNo = 9999
+                    }
                     val platformWrappingCount: Int = floor(platformLastNo / 10000.0).toInt()
                     val platformPumplogNo: Long = platformLastNo % 10000
                     aapsLogger.debug(LTag.PUMPCOMM, "platformPumplogNo: $platformPumplogNo, platformWrappingCount: $platformWrappingCount")

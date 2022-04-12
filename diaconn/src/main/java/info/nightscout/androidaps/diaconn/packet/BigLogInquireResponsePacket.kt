@@ -28,6 +28,7 @@ import org.joda.time.DateTime
 import retrofit2.Call
 import retrofit2.Response
 import java.lang.Exception
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -749,13 +750,17 @@ class BigLogInquireResponsePacket(
 
         // 플랫폼 동기화이면,
         if(diaconnG8Pump.isPlatformUploadStarted){
-
             aapsLogger.debug(LTag.PUMPCOMM, "Diaconn api upload start!!")
+            var appUid:String = sp.getString(R.string.key_diaconn_g8_appuid, "")
+            if (appUid.isEmpty()) {
+                appUid = UUID.randomUUID().toString()
+                sp.putString(R.string.key_diaconn_g8_appuid, appUid)
+            }
             //api send
             val retrofit = diaconnLogUploader.getRetrofitInstance()
             val api = retrofit?.create(DiaconnApiService::class.java)
             val pumpLogDto = PumpLogDto(
-                app_uid = "AndroidAPS",
+                app_uid = appUid,
                 app_version = context.packageManager.getPackageInfo(context.packageName, 0).versionName,
                 pump_uid = diaconnG8Pump.pumpUid,
                 pump_version = diaconnG8Pump.pumpVersion,
